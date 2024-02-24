@@ -18,6 +18,9 @@ DISABLE_MAIL=true
 ORIGIN=http://localhost:3000
 ORIGIN_1=http://127.0.0.1:3000
 
+# Other app integrations
+BACKDOOR_SERVER_ACCESS_URL=http://localhost:38002
+
 # --- Databases ---
 # General username and password for all databases(Recommended)
 DATABASE_USERNAME=username

@@ -1,9 +1,8 @@
 const dotenv = require("dotenv");
 const { v4: uuidv4 } = require("uuid");
 
-const { AuthAPI } = require("express-authentication");
+const { AuthAPI, UserAPI } = require("express-authentication");
 
-const confirmUserEmailWithPrivateKey = require("express-authentication/src/email/confirmUserEmailWithPrivateKey");
 const serverUrl = require("express-authentication/src/public/web/serverUrl");
 const { envServerUrl } = require("express-authentication/src/controllers/env/env");
 
@@ -26,10 +25,9 @@ class AuthTestAPI {
         // Get server url
         const ENV_SERVER_URL = envServerUrl();
         const url = serverUrl(ENV_SERVER_URL);
-        console.log(`Url: ${url}`);
         
         // Auth api
-        const api = new AuthAPI(userData, url, true);
+        const api = new AuthAPI(userData, url);
         
         // 'express-authentication' by itself doesn't have a scope
         // but 'good-roots' does, for now, we will limit it to only good roots.
@@ -51,15 +49,59 @@ class AuthTestAPI {
         const registerRes = await this.api.registerUser();
         
         // Confirm user email
-        await confirmUserEmailWithPrivateKey(this.userData.email);
+        await this.api.confirmUserEmailWithPrivateKey(this.userData.email);
         
         // Login user to be able to delete it
         await this.api.loginGetJwt();
         
-        // Now delete user, because we only need to check if register was successful
-        await this.api.deleteUser();
+        // User api
+        const userApi = UserAPI.fromAuthenticatedAPI(this.api);
+        await userApi.delete();
         
         return registerRes;
+    }
+    
+    /**
+     * Confirm email through backdoor access
+     */
+    async backdoorEmailConfirmationTest() {
+        // Result
+        await this.api.registerUser();
+        
+        // Confirm user email
+        const emailConfirmed = await this.api.confirmUserEmailWithPrivateKey(this.userData.email);
+        
+        // Login user to be able to delete it
+        await this.api.loginGetJwt();
+        
+        // User api
+        const userApi = UserAPI.fromAuthenticatedAPI(this.api);
+        await userApi.delete();
+        
+        return emailConfirmed;
+    }
+    
+    /**
+     * Delete user
+     * 
+     * @returns 
+     */
+    async deleteUserTest() {
+        // Result
+        await this.api.registerUser();
+        
+        // Confirm user email
+        await this.api.confirmUserEmailWithPrivateKey();
+        
+        // Login user to be able to delete it
+        await this.api.loginGetJwt();
+        
+        const userApi = UserAPI.fromAuthenticatedAPI(this.api);
+        
+        // Now delete user, because we only need to check if register was successful
+        const deleteRes = await userApi.delete();
+        
+        return deleteRes;
     }
     
     // --- Get/Sets ---
