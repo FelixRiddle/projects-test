@@ -12,7 +12,7 @@ test('Reset email sent(Authenticated)', async function() {
         path: ".env"
     });
     
-    // The api is at 'auth2
+    // The api is at 'auth2'
     const url = `${envServerUrl()}/auth2`;
     
     const userPassword = "asd12345";
