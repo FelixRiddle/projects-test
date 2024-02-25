@@ -79,6 +79,8 @@ const mod = module.exports = class AuthTask {
      */
     getResultOf(taskId) {
         this.fetchResult = taskId;
+        
+        return this;
     }
 };
 

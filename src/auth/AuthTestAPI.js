@@ -68,6 +68,17 @@ module.exports = class AuthTestAPI {
     }
     
     /**
+     * Login user
+     * 
+     * @returns {Object} Response data object
+     */
+    async loginUser() {
+        return await this.authTask
+            .getResultOf(AuthTask.LOGIN)
+            .createAndDelete();
+    }
+    
+    /**
      * Delete user
      * 
      * @returns {Object} Response data object

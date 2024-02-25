@@ -1,16 +1,4 @@
-const dotenv = require("dotenv");
-
-const { AuthAPI } = require("express-authentication");
-const { envServerUrl } = require("express-authentication/src/controllers/env/env");
-
 const AuthTestAPI = require("../../../auth/AuthTestAPI");
-
-// Setup dotenv
-dotenv.config({
-    path: ".env"
-});
-
-const url = envServerUrl();
 
 test('Successful register', async () => {
     const api = new AuthTestAPI();
