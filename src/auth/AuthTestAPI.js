@@ -6,32 +6,40 @@ const { AuthAPI, UserAPI } = require("express-authentication");
 const serverUrl = require("express-authentication/src/public/web/serverUrl");
 const { envServerUrl } = require("express-authentication/src/controllers/env/env");
 
-class AuthTestAPI {
-    constructor() {
+const AuthTask = require("./AuthTask");
+
+module.exports = class AuthTestAPI {
+    constructor(userData=undefined) {
         // Setup dotenv
         dotenv.config({
             path: ".env"
         });
         
         // Create user data
-        const userData = {
-            name: "Alistar",
-            email: `${uuidv4()}@email.com`,
-            password: "asd12345",
-            confirmPassword: "asd12345"
-        };
-        this.userData = userData;
+        if(userData) {
+            this.userData = userData;
+        } else {
+            const defaultUserData = {
+                name: "Alistar",
+                email: `${uuidv4()}@email.com`,
+                password: "asd12345",
+                confirmPassword: "asd12345"
+            };
+            this.userData = defaultUserData;
+        }
         
         // Get server url
         const ENV_SERVER_URL = envServerUrl();
         const url = serverUrl(ENV_SERVER_URL);
         
         // Auth api
-        const api = new AuthAPI(userData, url);
+        const api = new AuthAPI(this.userData, url);
         
         // 'express-authentication' by itself doesn't have a scope
         // but 'good-roots' does, for now, we will limit it to only good roots.
         api.setEndpointScope("auth2");
+        
+        this.authTask = new AuthTask(api, this.userData);
         
         this.api = api;
     }
@@ -45,63 +53,28 @@ class AuthTestAPI {
      * @returns {Object} Response data object
      */
     async registerTest() {
-        // Result
-        const registerRes = await this.api.registerUser();
-        
-        // Confirm user email
-        await this.api.confirmUserEmailWithPrivateKey(this.userData.email);
-        
-        // Login user to be able to delete it
-        await this.api.loginGetJwt();
-        
-        // User api
-        const userApi = UserAPI.fromAuthenticatedAPI(this.api);
-        await userApi.delete();
-        
-        return registerRes;
+        this.authTask.getResultOf(AuthTask.REGISTER);
+        return await this.authTask.createAndDelete();
     }
     
     /**
      * Confirm email through backdoor access
+     * 
+     * @returns {Object} Response data object
      */
     async backdoorEmailConfirmationTest() {
-        // Result
-        await this.api.registerUser();
-        
-        // Confirm user email
-        const emailConfirmed = await this.api.confirmUserEmailWithPrivateKey(this.userData.email);
-        
-        // Login user to be able to delete it
-        await this.api.loginGetJwt();
-        
-        // User api
-        const userApi = UserAPI.fromAuthenticatedAPI(this.api);
-        await userApi.delete();
-        
-        return emailConfirmed;
+        this.authTask.getResultOf(AuthTask.CONFIRM_EMAIL);
+        return await this.authTask.createAndDelete();
     }
     
     /**
      * Delete user
      * 
-     * @returns 
+     * @returns {Object} Response data object
      */
     async deleteUserTest() {
-        // Result
-        await this.api.registerUser();
-        
-        // Confirm user email
-        await this.api.confirmUserEmailWithPrivateKey();
-        
-        // Login user to be able to delete it
-        await this.api.loginGetJwt();
-        
-        const userApi = UserAPI.fromAuthenticatedAPI(this.api);
-        
-        // Now delete user, because we only need to check if register was successful
-        const deleteRes = await userApi.delete();
-        
-        return deleteRes;
+        this.authTask.getResultOf(AuthTask.DELETE);
+        return await this.authTask.createAndDelete();
     }
     
     // --- Get/Sets ---
@@ -161,5 +134,3 @@ class AuthTestAPI {
         return this.userData.confirmPassword;
     }
 }
-
-module.exports = AuthTestAPI;
