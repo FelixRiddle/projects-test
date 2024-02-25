@@ -18,11 +18,9 @@ const mod = module.exports = class AuthTask {
     }
     
     /**
-     * Create confirm and delete user
-     * 
-     * @returns {Object} Response data
+     * Create a user
      */
-    async createAndDelete() {
+    async create() {
         let result = undefined;
         
         // --- Register ---
@@ -58,6 +56,17 @@ const mod = module.exports = class AuthTask {
         // if(!loginRes.loggedIn) {
         //     return result;
         // }
+        
+        return result;
+    }
+    
+    /**
+     * Create confirm and delete user
+     * 
+     * @returns {Object} Response data
+     */
+    async createAndDelete() {
+        let result = await this.create();
         
         // --- Delete user ---
         // User api
