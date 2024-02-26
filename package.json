@@ -13,6 +13,7 @@
     "backdoor-server-access": "github:FelixRiddle/backdoor-server-access",
     "dotenv": "^16.4.5",
     "express-authentication": "github:FelixRiddle/express-authentication",
+    "good-roots": "github:FelixRiddle/good-roots",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

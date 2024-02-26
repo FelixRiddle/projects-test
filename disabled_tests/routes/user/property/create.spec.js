@@ -1,288 +1,285 @@
-import dotenv from "dotenv";
+// const { v4: uuidv4 } = require("uuid");
+// const dotenv = require("dotenv");
 
-import { AuthAPI } from "express-authentication";
+// const { AuthAPI, confirmUserEmailWithPrivateKey } = require("express-authentication");
+// const { envServerUrl } = require("express-authentication/src/controllers/env/env")
+// const { serverUrl } = require("express-authentication/src/controllers/env/env");
 
-import { serverUrl } from "express-authentication/src/controllers/env/env.js";
-import PropertyAPI from "express-authentication/src/api/user/property/PropertyAPI.js";
+// // Jest doesn't support ECMASCRIPT
+// const { PropertyAPI } = require("good-roots");
 
-describe("Create property", () => {
-    // Setup dotenv
-    dotenv.config({
-        path: ".env"
-    });
+// test('Successful property creation', async function() {
+//     // Setup dotenv
+//     dotenv.config({
+//         path: ".env"
+//     });
     
-    // Create user data
-    const userData = {
-        name: "Create property",
-        email: "create_property_tests@email.com",
-        password: "asd12345",
-        confirmPassword: "asd12345"
-    };
+//     // The api is at 'auth2'
+//     const url = `${envServerUrl()}/auth2`;
     
-    const url = serverUrl();
-    const api = new AuthAPI(userData, url);
+//     const userPassword = "demacia_123";
+//     const userData = {
+//         name: "Garen",
+//         email: `garen_${uuidv4()}@demacia.com`,
+//         password: userPassword,
+//         confirmPassword: userPassword
+//     };
+//     const api = new AuthAPI(userData, url);
     
-    // Run asynchronous work before the tests start
-    beforeEach(async function() {
-        // Register, and login
-        await api.createLoginGetInstance();
-    });
+//     // Create user and login
+//     await api.registerUser();
+//     await api.confirmUserEmailWithPrivateKey(userData.email);
+//     await api.loginGetJwt();
+//     console.log(`Property api: `, PropertyAPI);
+//     const propertyApi = new PropertyAPI(api.instance);
     
-    afterEach(async () => {
-        await api.deleteUser();
-    });
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 3,
+//         parking: 2,
+//         bathrooms: 3,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
     
-    it('Successful property creation', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 3,
-            parking: 2,
-            bathrooms: 3,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(propertyCreatedResult && propertyCreatedResult.propertyCreated).toBe(true);
-    });
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
     
-    // Test wrong ones
-    // There are too many possibilities 😩 I will test some of them 
-    it('Bad title', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "L",
-            description: "This is a luxury house",
-            rooms: 3,
-            parking: 2,
-            bathrooms: 3,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     expect(propertyCreatedResult && propertyCreatedResult.propertyCreated).toBe(true);
+// });
+
+// // Test wrong ones
+// // There are too many possibilities 😩 I will test some of them 
+// it('Bad title', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
     
-    it('Bad description', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury House",
-            description: "This",
-            rooms: 3,
-            parking: 2,
-            bathrooms: 3,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     // Create some property
+//     const property = {
+//         title: "L",
+//         description: "This is a luxury house",
+//         rooms: 3,
+//         parking: 2,
+//         bathrooms: 3,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
     
-    it('Bad rooms quantity', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 10,
-            parking: 2,
-            bathrooms: 3,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
     
-    it('Bad parking quantity', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 4,
-            parking: 5,
-            bathrooms: 3,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Bad description', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
     
-    it('Bad bathrooms quantity', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 4,
-            parking: 3,
-            bathrooms: 5,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     // Create some property
+//     const property = {
+//         title: "Luxury House",
+//         description: "This",
+//         rooms: 3,
+//         parking: 2,
+//         bathrooms: 3,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
     
-    it('Bad price quantity', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 4,
-            parking: 3,
-            bathrooms: 5,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 11,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
     
-    it('Bad category quantity', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 4,
-            parking: 3,
-            bathrooms: 5,
-            street: 'Norris Road 1223',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 4,
-            categoryId: 8,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Bad rooms quantity', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
     
-    it('Street is not falsy', async function() {
-        const propertyApi = new PropertyAPI(api.instance);
-        
-        // Create some property
-        const property = {
-            title: "Luxury house",
-            description: "This is a luxury house",
-            rooms: 4,
-            parking: 3,
-            bathrooms: 3,
-            street: '',
-            latitude: 35.0831751,
-            longitude: -90.022207,
-            priceId: 5,
-            categoryId: 4,
-            image: "",
-            // This is here but in the endpoint it does nothing
-            published: true,
-            userId: this.userId,
-        };
-        const propertyCreatedResult = await propertyApi.createProperty(property);
-        
-        // Now delete every user property
-        await propertyApi.deleteAll();
-        
-        expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
-    });
-});
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 10,
+//         parking: 2,
+//         bathrooms: 3,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
+    
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
+    
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Bad parking quantity', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
+    
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 4,
+//         parking: 5,
+//         bathrooms: 3,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
+    
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
+    
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Bad bathrooms quantity', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
+    
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 4,
+//         parking: 3,
+//         bathrooms: 5,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
+    
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
+    
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Bad price quantity', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
+    
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 4,
+//         parking: 3,
+//         bathrooms: 5,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 11,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
+    
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
+    
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Bad category quantity', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
+    
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 4,
+//         parking: 3,
+//         bathrooms: 5,
+//         street: 'Norris Road 1223',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 4,
+//         categoryId: 8,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
+    
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
+    
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
+
+// it('Street is not falsy', async function() {
+//     const propertyApi = new PropertyAPI(api.instance);
+    
+//     // Create some property
+//     const property = {
+//         title: "Luxury house",
+//         description: "This is a luxury house",
+//         rooms: 4,
+//         parking: 3,
+//         bathrooms: 3,
+//         street: '',
+//         latitude: 35.0831751,
+//         longitude: -90.022207,
+//         priceId: 5,
+//         categoryId: 4,
+//         image: "",
+//         // This is here but in the endpoint it does nothing
+//         published: true,
+//         userId: this.userId,
+//     };
+//     const propertyCreatedResult = await propertyApi.createProperty(property);
+    
+//     // Now delete every user property
+//     await propertyApi.deleteAll();
+    
+//     expect(!(propertyCreatedResult && propertyCreatedResult.propertyCreated)).toBe(true);
+// });
